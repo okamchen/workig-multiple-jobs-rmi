@@ -15,29 +15,31 @@ public class Processor {
     }
     
     public Processor () {
-    	int idJob = 0;
-    	while (true) {
-    		String url = "rmi://localhost:" + 8877 + "/tracker" + idJob;
-    		try {
-    			job = (Job) Naming.lookup(url);
-    			this.orderListJob();
-    			idJob++;
-    		} catch (Exception e) {
-    			return;
-    		}
-    	}
+		String url = "rmi://localhost:" + 8877 + "/tracker";
+		while(true) {
+			try {
+				job = (Job) Naming.lookup(url);
+				this.orderListJob();
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				return;
+			}
+		}
     }
 
     private void orderListJob() {
         try {
-        	List<Integer> listaJob = job.getListById();
+        	List<Integer> listaJob = job.getLastList();
+        	if (listaJob == null) {
+        		return;
+        	}
         	BubbleSort bs = BubbleSort.build();
         	
         	while (!bs.isOrdenado()) {
 				bs.execute(listaJob);
             }
         	
-			// Thread.sleep(400);
+			 Thread.sleep(400);
         	
         	job.sendJobResult(bs.getListaOrdenada());
         	

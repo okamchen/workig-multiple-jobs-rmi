@@ -12,38 +12,47 @@ import br.feevale.processor.share.Job;
 
 public class Tracker {
 	
+	public static Integer count = 0;
+	
+	public static List<List<Integer>> lista = new ArrayList<>();
+	public static List<Integer> listaOrdenada = new ArrayList<>();
+	
     public static void main(String[] args) {
     	
-    	int numberWorks = 100;
-    	Tracker tracker = new Tracker();
+    	int maxListNumbers = 100;
+    	int maxResult = 1000;
+    	
+    	Tracker t = new Tracker();
+		t.buildRandomList(maxListNumbers, maxResult);
     	
     	String url;
     	try {
     		startRegistry(8877);
-    		for (int i = 0; i < numberWorks; i++) {    			
-    			url = "rmi://localhost:" + 8877 + "/tracker" + i;
-    			Job job = new PrimeJob(i, tracker.getRandomList(1000));
-    			Naming.rebind(url, job);
-    		}
+			url = "rmi://localhost:" + 8877 + "/tracker";
+			Job job = new PrimeJob();
+			Naming.rebind(url, job);
     	} catch (Exception e) {
     		e.printStackTrace();
     	}
     	System.out.println("Tracker Ready!");
     }
     
-    public List<Integer> getRandomList(int maxInteiros) {
-		List<Integer> lista = new ArrayList<>();
-
-		for (int j = 0; j < maxInteiros; j++) {
-			lista.add(Integer.valueOf(ThreadLocalRandom.current().nextInt(1, maxInteiros)));
-		}
+    public void buildRandomList(int maxListNumbers, int maxResult) {
+    	for (int i = 0; i < maxListNumbers; i++) {
+    		List<Integer> numbers = new ArrayList<>();
+    		for (int j = 0; j < maxResult; j++) {
+    			numbers.add(Integer.valueOf(ThreadLocalRandom.current().nextInt(1, maxResult)));
+    		}
+    		
+    		lista.add(numbers);
+    	}
  
-		return lista;
     }
     
-    public static void listResults(Integer id, List<Integer> listaOrdenada){
+    public static void listResults(List<Integer> listaOrdenada){
+    	count++;
     	for(Integer n : listaOrdenada){
-          System.out.println("Worker: " + id + ", value: " + n);
+          System.out.println("Worker: " + count + ", value: " + n);
     	}
     }
     
